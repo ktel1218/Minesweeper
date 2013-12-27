@@ -2,6 +2,18 @@ body{
     font-family: helvetica;
 }
 
+#wrapper{
+    margin: 10%;
+    text-align: center;
+    min-width: 400px;
+}
+
+#board{
+    border: 1px solid gray;
+    display: inline-block;
+    margin: auto;
+}
+
 .row{
     clear: both;
 }
@@ -11,7 +23,8 @@ body{
     width: 20px;
     height: 20px;
     float: left;
-    border: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-right: 1px solid gray;
     cursor: pointer;
 }
 
