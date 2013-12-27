@@ -1,0 +1,20 @@
+body{
+    font-family: helvetica;
+}
+
+.row{
+    clear: both;
+}
+
+.cell{
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    float: left;
+    border: 1px solid gray;
+    cursor: pointer;
+}
+
+.cell span{
+    display: none;
+}
