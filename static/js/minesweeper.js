@@ -16,10 +16,23 @@ function display(grid){
         board.appendChild(row_div);
         for (var j = 0; j < grid[i].length; j++) {
             var col_div = document.createElement("div");
-            var content = document.createElement("span");
-            col_div.className = "cell";
             col_div.id = j;
-            content.innerHTML = grid[i][j];
+            var content;
+            if (grid[i][j] == 0){
+                col_div.className = "blank cell";
+                content = document.createElement("span");
+                content.innerHTML = " ";
+            }
+            else if (grid[i][j] == -1){
+                col_div.className = "mine cell";
+                content = document.createElement("img");
+                content.src = "resources/mine.png";
+            }
+            else{
+                col_div.className = "number cell";
+                content = document.createElement("span");
+                content.innerHTML = grid[i][j];                
+            }
             col_div.appendChild(content);
             row_div.appendChild(col_div);
         }
@@ -111,26 +124,55 @@ function main(width, height, mines){
     var grid = init(width, height, mines);
     display(grid);
 
-    $('.cell').click(function() {
+    $('.cell').click(function(e) {
         var clicked = $('> span', this);
-        var content = clicked.html();
-        if (content == 0){
-            var i = $(this).parent().attr('id');
-            var j = this.id;
-            check_neighbors(width, height, grid, parseInt(i), parseInt(j));
+
+        if (e.shiftKey) {
+            if ($('> .flag', this).attr('class') === undefined){
+                var flag = document.createElement('img');//will be img
+                flag.src = "resources/flag.png";
+                flag.className = 'flag';
+                this.appendChild(flag);
+                $('> .flag', this).show();
+            }
+            else {
+                $('> .flag', this).remove();
+            }
+            // console.log("flagged!");
         }
-        if (content == -1){
-            // alert("GAMEOVER");
+        else{
+            var content = clicked.html();
+            console.log(this.className);
+            if ($('> .flag', this).attr('class') !== undefined){
+                $('> .flag', this).remove();
+            }
+            if (content == 0){
+                var i = $(this).parent().attr('id');
+                var j = this.id;
+                check_neighbors(width, height, grid, parseInt(i), parseInt(j));
+            }
+            if (this.className == "mine cell"){
+                // if ($('.mine').children('.flag') == undefined){
+                    $('.mine img').show();
+                    // $('> flag', 'mine').remove();
+
+                alert("GAMEOVER");
+                // }
+                $('> .flag', '.number').attr('src', 'resources/bad_flag.png');
+                $('> .flag', '.blank').attr('src', 'resources/bad_flag.png');
+                this.style.backgroundColor = "ff5522";
+            }
+            while (STACK.length > 0){
+                var coords = STACK.pop();
+                var row = $("#"+coords[0]+".row");
+                var cell = $('> #'+coords[1], row);
+                $('> span', cell).show();
+                $('> .flag', cell).remove();
+
+            }
+            clicked.show();
         }
-        while (STACK.length > 0){
-            var coords = STACK.pop();
-            var row = $("#"+coords[0]+".row");
-            var cell = $('> #'+coords[1], row);
-            $('> span', cell).show();
-        }
-        clicked.show();
         
-        // this.style.backgroundColor = "yellow";
     });
 
 

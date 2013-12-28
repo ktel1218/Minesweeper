@@ -1,5 +1,8 @@
 body{
     font-family: helvetica;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 #wrapper{
@@ -30,4 +33,9 @@ body{
 
 .cell span{
     display: none;
+}
+
+.cell img{
+    display: none;
+    z-index: 100;
 }
