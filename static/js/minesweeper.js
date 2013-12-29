@@ -1,4 +1,5 @@
 var STACK = [];
+var GAMEOVER = false;
 
 function valid_coordinate (width, height, row, col){
     if (row >= 0 && row < height && col >= 0 && col < width){
@@ -26,7 +27,7 @@ function display(grid){
             else if (grid[i][j] == -1){
                 col_div.className = "mine cell";
                 content = document.createElement("img");
-                content.src = "resources/mine.png";
+                content.src = "resources/transparent/mine.png";
             }
             else{
                 col_div.className = "number cell";
@@ -122,15 +123,18 @@ function init(width, height, mines){
 function main(width, height, mines){
 
     var grid = init(width, height, mines);
+    var total =  width * height;
+    var touched = 0;
     display(grid);
 
     $('.cell').click(function(e) {
         var clicked = $('> span', this);
 
+        //if shift clicking, place flag. If flagged, remove flag
         if (e.shiftKey) {
             if ($('> .flag', this).attr('class') === undefined){
                 var flag = document.createElement('img');//will be img
-                flag.src = "resources/flag.png";
+                flag.src = "resources/transparent/flag.png";
                 flag.className = 'flag';
                 this.appendChild(flag);
                 $('> .flag', this).show();
@@ -138,39 +142,60 @@ function main(width, height, mines){
             else {
                 $('> .flag', this).remove();
             }
-            // console.log("flagged!");
         }
-        else{
+        // if regular click, and if square isn't flagged, and if not gameover
+        else if ($('> .flag', this).attr('class') == undefined && !GAMEOVER){
+
             var content = clicked.html();
-            console.log(this.className);
-            if ($('> .flag', this).attr('class') !== undefined){
-                $('> .flag', this).remove();
-            }
+            
             if (content == 0){
                 var i = $(this).parent().attr('id');
                 var j = this.id;
                 check_neighbors(width, height, grid, parseInt(i), parseInt(j));
             }
-            if (this.className == "mine cell"){
-                // if ($('.mine').children('.flag') == undefined){
-                    $('.mine img').show();
-                    // $('> flag', 'mine').remove();
-
-                alert("GAMEOVER");
-                // }
-                $('> .flag', '.number').attr('src', 'resources/bad_flag.png');
-                $('> .flag', '.blank').attr('src', 'resources/bad_flag.png');
-                this.style.backgroundColor = "ff5522";
-            }
+            
             while (STACK.length > 0){
                 var coords = STACK.pop();
                 var row = $("#"+coords[0]+".row");
                 var cell = $('> #'+coords[1], row);
+                $('> #'+coords[1], row).css('background-color', '#ffffff');
                 $('> span', cell).show();
+                touched ++;
                 $('> .flag', cell).remove();
 
             }
+            this.style.backgroundColor = "ffffff";
             clicked.show();
+            touched ++;
+
+            if (this.className == "mine cell"){
+                $('.mine').each(function(i){
+                    if ($('> .flag', this).attr('class') === undefined){
+                        $('img', this).show();
+                    }
+                });
+
+                // if ($('.mine').children('.flag') == undefined){
+                    // $('.mine img').show();
+                    // $('> flag', 'mine').remove();
+
+                // }
+                $('> .flag', '.number').attr('src', 'resources/transparent/bad_flag.png');
+                $('> .flag', '.blank').attr('src', 'resources/transparent/bad_flag.png');
+                this.style.backgroundColor = "ff5522";
+                GAMEOVER = true;
+                alert("GAMEOVER");
+            }
+            else if (total - touched == mines){
+                alert("YOUWIN");
+                GAMEOVER = true;
+            }
+            console.log("total: ", total);
+            console.log("touched: ", touched);
+            console.log("remaining: ", total-touched);
+            console.log("mines: ", mines);
+
+            
         }
         
     });

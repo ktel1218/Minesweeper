@@ -1,12 +1,13 @@
 body{
     font-family: helvetica;
+    /* prevent text from highlighting*/
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
 }
 
 #wrapper{
-    margin: 10%;
+    margin-top: 50px;
     text-align: center;
     min-width: 400px;
 }
@@ -29,6 +30,7 @@ body{
     border-bottom: 1px solid gray;
     border-right: 1px solid gray;
     cursor: pointer;
+    background-color: #eeeeee;
 }
 
 .cell span{
