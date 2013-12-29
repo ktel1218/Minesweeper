@@ -1,4 +1,4 @@
-var STACK = [];
+var STACK = {};
 var GAMEOVER = false;
 
 function valid_coordinate (width, height, row, col){
@@ -43,7 +43,7 @@ function display(grid){
 function check_neighbors(width, height, grid, i, j){
     // basecase
     if (valid_coordinate(width, height, i, j)){
-        STACK.push([i,j]);
+        STACK[[i, j]] = [i, j];
         if (grid[i][j] === 0){
             grid[i][j] = " ";
 
@@ -70,16 +70,16 @@ function check_neighbors(width, height, grid, i, j){
             // console.log(i-1, j-1);
             //add diagonals to stack (DUPLICATES IN LIST, UGH)
             if (valid_coordinate(width, height, i+1, j+1)){
-                STACK.push([i+1, j+1]);
+                STACK[[i+1, j+1]] = [i+1, j+1];
             }
             if (valid_coordinate(width, height, i-1, j-1)){
-                STACK.push([i-1, j-1]);
+                STACK[[i-1, j-1]] = [i-1, j-1];
             }
             if (valid_coordinate(width, height, i+1, j-1)){
-                STACK.push([i+1, j-1]);
+                STACK[[i+1, j-1]] = [i+1, j-1];
             }
             if (valid_coordinate(width, height, i-1, j+1)){
-                STACK.push([i-1, j+1]);
+                STACK[[i-1, j+1]] = [i-1, j+1];
             }
             return;
         }
@@ -124,7 +124,16 @@ function main(width, height, mines){
 
     var grid = init(width, height, mines);
     var total =  width * height;
-    var touched = 0;
+    var touched = {};
+
+    function get_size(obj) {
+        var size = 0, key;
+        for (key in obj){
+            if (obj.hasOwnProperty(key)) size ++;
+        }
+        return size;
+    };
+
     display(grid);
 
     $('.cell').click(function(e) {
@@ -147,26 +156,29 @@ function main(width, height, mines){
         else if ($('> .flag', this).attr('class') == undefined && !GAMEOVER){
 
             var content = clicked.html();
+            var i = parseInt($(this).parent().attr('id'));
+            var j = parseInt(this.id);
+            STACK[[i, j]] = [i, j];
             
             if (content == 0){
-                var i = $(this).parent().attr('id');
-                var j = this.id;
-                check_neighbors(width, height, grid, parseInt(i), parseInt(j));
+                
+                check_neighbors(width, height, grid, i, j);
             }
             
-            while (STACK.length > 0){
-                var coords = STACK.pop();
+            for (key in STACK){
+                var coords = STACK[key];
+                touched[key] = STACK[key];
+                delete STACK[key];
                 var row = $("#"+coords[0]+".row");
                 var cell = $('> #'+coords[1], row);
                 $('> #'+coords[1], row).css('background-color', '#ffffff');
                 $('> span', cell).show();
-                touched ++;
+                // touched ++;
                 $('> .flag', cell).remove();
 
             }
             this.style.backgroundColor = "ffffff";
-            clicked.show();
-            touched ++;
+            // clicked.show();
 
             if (this.className == "mine cell"){
                 $('.mine').each(function(i){
@@ -186,13 +198,15 @@ function main(width, height, mines){
                 GAMEOVER = true;
                 alert("GAMEOVER");
             }
-            else if (total - touched == mines){
+            else if (total - get_size(touched) == mines){
                 alert("YOUWIN");
                 GAMEOVER = true;
             }
+            // touched ++;
+            console.log(touched);
             console.log("total: ", total);
-            console.log("touched: ", touched);
-            console.log("remaining: ", total-touched);
+            console.log("touched: ", get_size(touched));
+            console.log("remaining: ", total-get_size(touched));
             console.log("mines: ", mines);
 
             
