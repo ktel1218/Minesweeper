@@ -2,14 +2,18 @@
     <head>
         <title>Minesweeper</title>
         <link rel="stylesheet" href="static/css/minestyle.css">
+        <link href='http://fonts.googleapis.com/css?family=Exo+2:700,300,700italic,300italic' rel='stylesheet' type='text/css'>
 
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
         <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
         <script src="static/js/minesweeper.js"></script>
     </head>
-    <body onload="main(15,20,20)">
+    <body onload="main(15,20,35)">
+        <h1>MINESWEEPER</h1>
+        <div id="alert"> </div>
         <div id="wrapper">
             <span id="board"></span>  
         </div>
+        <div id="instructions"><h3>flag <img src= resources/transparent/flag.png> (&#8679click)</h3><h3>play again (Ctrl+R or &#8984+R)</h3></div> 
     </body>
 </html>

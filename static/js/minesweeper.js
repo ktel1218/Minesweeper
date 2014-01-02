@@ -173,12 +173,10 @@ function main(width, height, mines){
                 var cell = $('> #'+coords[1], row);
                 $('> #'+coords[1], row).css('background-color', '#ffffff');
                 $('> span', cell).show();
-                // touched ++;
                 $('> .flag', cell).remove();
 
             }
             this.style.backgroundColor = "ffffff";
-            // clicked.show();
 
             if (this.className == "mine cell"){
                 $('.mine').each(function(i){
@@ -187,32 +185,17 @@ function main(width, height, mines){
                     }
                 });
 
-                // if ($('.mine').children('.flag') == undefined){
-                    // $('.mine img').show();
-                    // $('> flag', 'mine').remove();
-
-                // }
                 $('> .flag', '.number').attr('src', 'resources/transparent/bad_flag.png');
                 $('> .flag', '.blank').attr('src', 'resources/transparent/bad_flag.png');
                 this.style.backgroundColor = "ff5522";
                 GAMEOVER = true;
-                alert("GAMEOVER");
+                $('#alert').html("GAME OVER");
             }
             else if (total - get_size(touched) == mines){
-                alert("YOUWIN");
+                $('#alert').html("MINES CLEARED");
+                $('#alert').css('color', '0066ff');
                 GAMEOVER = true;
             }
-            // touched ++;
-            console.log(touched);
-            console.log("total: ", total);
-            console.log("touched: ", get_size(touched));
-            console.log("remaining: ", total-get_size(touched));
-            console.log("mines: ", mines);
-
-            
         }
-        
     });
-
-
 }
