@@ -32,7 +32,7 @@ function display(grid){
             else{
                 col_div.className = "number cell";
                 content = document.createElement("span");
-                content.innerHTML = grid[i][j];                
+                content.innerHTML = grid[i][j];
             }
             col_div.appendChild(content);
             row_div.appendChild(col_div);
@@ -136,11 +136,31 @@ function main(width, height, mines){
 
     display(grid);
 
+    var contextMenu = document.oncontextmenu;
+    var mouseDownCell;
+    // Hide context menu
+    $('.cell').on('mousedown', function(e) {
+        if (e.button !== 2) return true;
+        e.preventDefault();
+        document.oncontextmenu = function() {return false;};
+        mouseDownCell = e.target;
+    });
+
+    // Restore context menu
+    $('body').on('mouseup', function(e) {
+        if (e.button !== 2) return true;
+        e.preventDefault();
+        document.oncontextmenu = contextMenu;
+        if (e.target === mouseDownCell) {
+            $(e.target).trigger({ type: 'click', flag: true })
+        }
+    });
+
     $('.cell').click(function(e) {
         var clicked = $('> span', this);
 
         //if shift clicking, place flag. If flagged, remove flag
-        if (e.shiftKey) {
+        if (e.shiftKey || e.flag) {
             if ($('> .flag', this).attr('class') === undefined){
                 var flag = document.createElement('img');//will be img
                 flag.src = "resources/transparent/flag.png";
@@ -159,12 +179,12 @@ function main(width, height, mines){
             var i = parseInt($(this).parent().attr('id'));
             var j = parseInt(this.id);
             STACK[[i, j]] = [i, j];
-            
+
             if (content == 0){
-                
+
                 check_neighbors(width, height, grid, i, j);
             }
-            
+
             for (key in STACK){
                 var coords = STACK[key];
                 touched[key] = STACK[key];
