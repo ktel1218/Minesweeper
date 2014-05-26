@@ -304,6 +304,9 @@ function main(width, height, mines){
       });
 
       $('.meow').remove();
+      function color () {
+        return Math.floor(Math.random() * 255);
+      }
       function kitten (width, height) {
         return 'http://placekitten.com/' + width + '/' + height;
       }
@@ -314,10 +317,11 @@ function main(width, height, mines){
           .addClass('meow')
           .css('width', width)
           .css('height', height)
-          .css('top', image.top * 21 + 138)
-          .css('left', image.left * 21 + 314.5)
+          .css('top', image.top * 21)
+          .css('left', image.left * 21)
+          .css('backgroundColor', 'rgb(' + color() + ',' + color() + ',' + color() + ')')
           .css('backgroundImage', 'url(' + kitten(width, height) + ')')
-          .appendTo('body');
+          .appendTo('#board');
       });
     }
 }
