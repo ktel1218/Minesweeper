@@ -197,6 +197,7 @@ function main(width, height, mines){
 
             }
             this.style.backgroundColor = "ffffff";
+            meow();
 
             if (this.className == "mine cell"){
                 $('.mine').each(function(i){
@@ -212,10 +213,115 @@ function main(width, height, mines){
                 $('#alert').html("GAME OVER");
             }
             else if (total - get_size(touched) == mines){
-                $('#alert').html("MINES CLEARED");
+                $('#alert').html("MINES CLEARED. MEOW!!!");
                 $('#alert').css('color', '0066ff');
                 GAMEOVER = true;
             }
         }
     });
+
+    function meow () {
+      function empty(cell) {
+        cell = $(cell);
+        return cell.hasClass('blank') &&
+          cell.css('backgroundColor') === "rgb(255, 255, 255)";
+      }
+
+      // Prepare a shadow grid where each cell is true if it's empty and can
+      // fit a cat
+      var grid = [];
+      $("#board .row").each(function (y, row) {
+        grid.push([]);
+        $(row).children().each(function (x, cell) {
+          grid[y].push( empty(cell) );
+        });
+      });
+
+      function Image (top, left, width, height) {
+        this.top = top;
+        this.left = left;
+        this.width = width;
+        this.height = height;
+      }
+      Image.prototype.fits = function () {
+        var self = this;
+        // Look at every cell the image covers, make sure they're all empty
+        return grid.every(function (row, y) {
+          // filter out rows the image doesn't cover
+          if (y < self.top || y >= self.top + self.height) {
+            return true;
+          }
+          return row.every(function (cell, x) {
+            // filter out cells/columns the image doesn't cover
+            if (x < self.left || x >= self.left + self.width) {
+              return true;
+            }
+            return cell;
+          });
+        });
+      };
+      Image.prototype.notOverlap = function (otherImages) {
+        var self = this;
+        return otherImages.every(function (image) {
+          return  self.left + self.width <= image.left ||
+                  image.left + image.width <= self.left ||
+                  self.top + self.height <= image.top ||
+                  image.top + image.height <= self.top;
+        });
+      };
+      Image.prototype.area = function () {
+        return this.width * this.height;
+      };
+
+      var images = [];
+      // Try every possible image size and position, see what fits
+      for (var height = grid.length; height > 1; height--) {
+        for (var width = grid[0].length; width > 1; width--) {
+          for (var top = 0; top <= grid.length - height; top++) {
+            for (var left = 0; left <= grid[0].length - width; left++) {
+              image = new Image(top, left, width, height);
+              if ( image.fits() ) {
+                images.push(image);
+              }
+            }
+          }
+        }
+      }
+
+      // Sort the found images from largest to smallest (by area)
+      images.sort(function (a, b) {
+        return b.area() - a.area();
+      });
+
+      var finalImages = [];
+      // Add each image to the list of final images to be drawn, as long as
+      // it does not overlap one in that list
+      images.forEach(function (image, index) {
+        // Does this image overlap existing images that have been added?
+        if ( image.notOverlap(finalImages) ) {
+          finalImages.push(image);
+        }
+      });
+
+      $('.meow').remove();
+      function color () {
+        return Math.floor(Math.random() * 255);
+      }
+      function kitten (width, height) {
+        return 'http://placekitten.com/' + width + '/' + height;
+      }
+      finalImages.forEach(function (image) {
+        var width = image.width * 21 - 1;
+        var height = image.height * 21 - 1;
+        $('<div style="position: absolute;"></div>')
+          .addClass('meow')
+          .css('width', width)
+          .css('height', height)
+          .css('top', image.top * 21)
+          .css('left', image.left * 21)
+          .css('backgroundColor', 'rgb(' + color() + ',' + color() + ',' + color() + ')')
+          .css('backgroundImage', 'url(' + kitten(width, height) + ')')
+          .appendTo('#board');
+      });
+    }
 }
